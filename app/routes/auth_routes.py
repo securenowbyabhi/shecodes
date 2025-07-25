@@ -1,6 +1,9 @@
 from flask import Blueprint, request
 from ..controllers.auth_controller import handle_register, handle_login
 
+# Author : av42956 
+# InIT_FILE : All APIs will be declared here
+
 auth_bp = Blueprint('shecodes', __name__, url_prefix='/shecodes')
 
 @auth_bp.route('/register', methods=['POST'])
