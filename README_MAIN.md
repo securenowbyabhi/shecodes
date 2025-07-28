@@ -65,12 +65,19 @@ python3 app.py
 STEPS FOR REACT 
 
 cd frontend
+
 node -v
+
 npm -v
+
 npm install
+
 npm install react-router-dom
+
 npm install react-toastify
+
 npm install react-bootstrap bootstrap react-router-bootstrap
+
 npm start
 
  <!-- above command should install all required files in and it will come under package.json -->
