@@ -20,7 +20,7 @@ export default function ProjectStatusPage() {
       setStatus(response.data);
     } catch (err) {
       setError(
-        err.response?.data?.error || "Something went wrong while fetching data"
+        err.response?.data?.message || "Something went wrong while fetching data"
       );
     }
   };
