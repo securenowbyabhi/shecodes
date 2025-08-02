@@ -3,13 +3,15 @@ from ..models.user import find_user_by_username, create_user
 from pymongo import MongoClient
 import bcrypt 
 import os
+from ..db import get_db
+from ..models.projects import get_project_by_id, get_hardware_status
+
 
 # Author : av42956 
 # Controller : to manage login and register user
 
-client = MongoClient(os.environ.get("MONGO_URI"))
-db = client.hardware_app
-users_collection = db.users
+db = get_db("Users")
+users_collection = db["Users"]
 
 
 def handle_register(request):
@@ -21,14 +23,15 @@ def handle_register(request):
         return jsonify({'error': 'Username and password required'}), 400
 
 
-    if users_collection.find_one({'username': username}):
+    if users_collection.find_one({'userid': username}):
         return jsonify({'error': 'Username already exists'}), 400
 
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     users_collection.insert_one({
-        'username': username,
-        'password': hashed_password.decode('utf-8')  
+        'userid': username,
+        #'password': hashed_password.decode('utf-8')   # Commented for local
+        'password': password
     })
 
     return jsonify({'message': 'User registered successfully'}), 201
@@ -44,3 +47,29 @@ def handle_login(request):
 
     session['username'] = username
     return jsonify({"message": f"Welcome, {username}!"}), 200
+
+
+def handle_project_status(request):
+    project_id = request.args.get("projectid")
+
+    if not project_id:
+        return jsonify({"error": "projectid is required"}), 400
+
+    project = get_project_by_id(project_id)
+    if not project:
+        return jsonify({"error": "Project not found"}), 404
+
+    inventory = get_hardware_status()
+
+    response = {
+        "projectid": project_id,
+        "checkedOut": project.get("phardware", [0, 0]),
+        "inventory": [
+            {
+                "hardwareid": hw["hardwareid"],
+                "capacity": hw["capacity"],
+                "available": hw["availability"]
+            } for hw in inventory
+        ]
+    }
+    return jsonify(response), 200
