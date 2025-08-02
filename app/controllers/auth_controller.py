@@ -20,11 +20,11 @@ def handle_register(request):
     password = data.get('password')
 
     if not username or not password:
-        return jsonify({'error': 'Username and password required'}), 400
+        return jsonify({'message': 'Username and password required'}), 400
 
 
     if users_collection.find_one({'userid': username}):
-        return jsonify({'error': 'Username already exists'}), 400
+        return jsonify({'message': 'Username already exists'}), 400
 
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
@@ -53,11 +53,11 @@ def handle_project_status(request):
     project_id = request.args.get("projectid")
 
     if not project_id:
-        return jsonify({"error": "projectid is required"}), 400
+        return jsonify({"message": "projectid is required"}), 400
 
     project = get_project_by_id(project_id)
     if not project:
-        return jsonify({"error": "Project not found"}), 404
+        return jsonify({"message": "Project not found"}), 404
 
     inventory = get_hardware_status()
 
