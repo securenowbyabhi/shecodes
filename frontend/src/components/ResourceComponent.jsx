@@ -7,6 +7,7 @@
  **********************************************************************************************************/
 import React from 'react';
 import ReusableHeaderComponent from './ReusableHeaderComponent'
+import ProjectStatusPage from './ProjectStatusPage';
 
 const ResourceComponent = () => {
     return (
@@ -15,6 +16,9 @@ const ResourceComponent = () => {
           title="Welcome to Resource Management" 
           message="You can explore your assigned projects, view associated hardware, and manage Check-In/Check-Out of resources." 
         />
+        <div className="mt-6">
+        <ProjectStatusPage />
+      </div>
       </div>
     );
   };
