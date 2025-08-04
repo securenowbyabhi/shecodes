@@ -9,7 +9,6 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import ReusableHeaderComponent from "./ReusableHeaderComponent";
 import CancelButton from './CancelButton';
-
 import { postToEndpoint } from "../utils/apiHelpers";
 import { showSuccess, showError } from "../utils/toastUtils";
 
@@ -31,19 +30,20 @@ function SignUpComponent() {
     event.preventDefault();
 
     try {
+
       const { ok, data } = await postToEndpoint("signup", {
         username: formData.userid,
         password: formData.password,
       });
 
       if (ok) {
-        showSuccess("Registration successful! Redirecting to login...");
-        setTimeout(() => navigate("/login"), 3000);
+        showSuccess(`Success: ${data.message}`);
+        navigate("/login");
       } else {
-        showError(`Registration failed: ${data.message || "Unknown error"}`);
+        showError(`Error: ${data.message || "Unknown error"}`);
       }
     } catch (error) {
-      showError("Network error: " + error.message);
+      showError(`Error: ${error.message}`);
     }
   };
 

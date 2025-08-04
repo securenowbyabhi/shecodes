@@ -7,14 +7,12 @@
  **********************************************************************************************************/
 import React, { useState } from 'react';
 
-// useOutletContext is required so that nested routes(login/register/project etc page) read data passed from the parent
+// useOutletContext is required so that nested routes(login/register/project/resouce etc page) read data passed from the parent
 import { useNavigate, useOutletContext  } from 'react-router-dom';
 import ReusableHeaderComponent from './ReusableHeaderComponent';
 import CancelButton from './CancelButton';
-
 import { postToEndpoint } from '../utils/apiHelpers';
 import { showSuccess, showError } from '../utils/toastUtils';
-
 
 function LoginComponent() {
   
@@ -32,23 +30,25 @@ function LoginComponent() {
   };
 
   const handleSubmit = async (event) => {
-  event.preventDefault(); // prevent unnecessary default reloading of UI
+
+    event.preventDefault(); // prevent unnecessary default reloading of UI
 
     try {
+
       const { ok, data } = await postToEndpoint('login', {
         username: formData.userid,
         password: formData.password,
       });
 
       if (ok) {
-        showSuccess('Login successful!');
+        showSuccess(`Success: ${data.message}`);
         setIsLoggedIn(true);
         navigate('/resource');
       } else {
-        showError(`Login failed: ${data.message || 'Unknown error'}`);
+        showError(`Error: ${data.message || 'Unknown error'}`);
       }
     } catch (error) {
-      showError('Network error: ' + error.message);
+      showError(`Error: ${error.message}`);
     }
   };
 
