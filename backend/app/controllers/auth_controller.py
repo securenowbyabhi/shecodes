@@ -4,7 +4,7 @@ from pymongo import MongoClient
 import bcrypt 
 import os
 from ..db import get_db
-from ..models.projects import get_project_by_id, get_hardware_status
+from ..models.projects import get_project_by_id, get_hardware_status,create_project
 
 
 # Author : av42956 
@@ -12,6 +12,8 @@ from ..models.projects import get_project_by_id, get_hardware_status
 
 db = get_db("Users")
 users_collection = db["Users"]
+db = get_db("Projects")
+project_collection = db["Projects"]
 
 
 def handle_register(request):
@@ -73,3 +75,29 @@ def handle_project_status(request):
         ]
     }
     return jsonify(response), 200
+
+
+
+def handle_create_project(request):
+    data = request.get_json()
+    projectid = data.get('projectid')
+    projectname = data.get('projectname')
+    description = data.get('description')
+    
+
+    if not projectid or not projectname or not description:
+        return jsonify({'message': 'Project Id, Project Name and Description are required'}), 400
+
+
+    if project_collection.find_one({'projectid': projectid}):
+        return jsonify({'message': 'Project Id already exists'}), 400
+
+    
+
+    project_collection.insert_one({
+        'projectid': projectid,
+        'projectname': projectname,
+        'description':description
+    })
+
+    return jsonify({'message': 'Project created successfully'}), 200
