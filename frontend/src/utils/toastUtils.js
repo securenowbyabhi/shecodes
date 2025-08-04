@@ -11,15 +11,17 @@ export function showSuccess(message) {
   toast.success(message, {
     position: 'top-center',
     autoClose: 3000,
-    hideProgressBar: false,
+    hideProgressBar: true,
     closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
+    style:{minWidth: '25rem', maxWidth: '1rem' }
   });
 }
 
 export function showError(message) {
   toast.error(message, {
     position: 'top-center',
+    hideProgressBar: true,
+    closeOnClick: true,
+    style:{minWidth: '25rem', maxWidth: '1rem' }
   });
 }
