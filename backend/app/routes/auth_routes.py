@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from ..controllers.auth_controller import handle_register, handle_login , handle_project_status,handle_create_project
+from ..controllers.auth_controller import handle_register, handle_login , handle_project_status, handle_create_project, handle_checkincheckout
 
 # Author : av42956 
 # InIT_FILE : All APIs will be declared here
@@ -29,3 +29,7 @@ def project_status():
 @auth_bp.route('/createproject', methods=['POST'])
 def project_creation():
     return handle_create_project(request)
+
+@auth_bp.route('/checkincheckout', methods=['POST'])  
+def resource_checkincheckout():
+   return handle_checkincheckout(request)

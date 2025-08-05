@@ -74,9 +74,7 @@ def handle_project_status(request):
             } for hw in inventory
         ]
     }
-    return jsonify(response), 200
-
-
+    return jsonify({"message": "Project data fetched successfully.", "response":response}), 200
 
 def handle_create_project(request):
     data = request.get_json()
@@ -101,3 +99,57 @@ def handle_create_project(request):
     })
 
     return jsonify({'message': 'Project created successfully'}), 200
+
+# method 'handle_checkincheckout' to handle resource check-in/check-out feature
+def handle_checkincheckout(request):
+
+    data = request.get_json()
+
+    projectid = data.get("projectid")
+    inventory = data.get("inventory") 
+    action = data.get("action")       
+
+    if not projectid or not inventory or not action:
+        return jsonify({"message": "projectid, inventory, and action are required"}), 400
+
+    # Access respective DB
+    inventory_db = get_db("Inventory")
+    project_db = get_db("Projects")
+
+    # Access respective Collections
+    inventory_collection = inventory_db["Inventory"]
+    project_collection = project_db["Projects"]
+
+    project = get_project_by_id(projectid)
+    if not project:
+        return jsonify({"message": "Project not found"}), 404
+
+    phardware = project.get("phardware", [0] * len(inventory))
+
+    for index, hwObj in enumerate(inventory):
+
+        hwid = hwObj["hardwareid"]
+        qty = int(hwObj["quantity"])
+
+        if action == "checkout":
+            #Updating Inventory collection at DB in checkout scenario
+            inventory_collection.update_one(
+                {"hardwareid": hwid},
+                {"$inc": {"availability": -qty}}
+            )
+            phardware[index] += qty
+        elif action == "checkin":
+            #Updating Inventory collection at DB in checkin scenario
+            inventory_collection.update_one(
+                {"hardwareid": hwid},
+                {"$inc": {"availability": qty}}
+            )
+            phardware[index] -= qty
+
+    # Updating Projects collection at DB
+    project_collection.update_one(
+        {"projectid": projectid},
+        {"$set": {"phardware": phardware}}
+    )
+
+    return jsonify({"message": f"{action.capitalize()} successful"}), 200
