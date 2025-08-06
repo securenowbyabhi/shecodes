@@ -7,3 +7,4 @@ backend/app/models/__pycache__/user.cpython-310.pyc
 backend/app/routes/__pycache__/auth_routes.cpython-310.pyc
 __pycache__/
 *.pyc
+package-lock.json
