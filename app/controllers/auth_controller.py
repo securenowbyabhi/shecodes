@@ -100,56 +100,96 @@ def handle_create_project(request):
 
     return jsonify({'message': 'Project created successfully'}), 200
 
-# method 'handle_checkincheckout' to handle resource check-in/check-out feature
-def handle_checkincheckout(request):
+HARDWARE_INDEX_MAP = {
+    "hw1": 0,
+    "hw2": 1
+}
 
+def handle_checkin_checkout(request):
     data = request.get_json()
+    project_id = data.get("projectid")
+    action = data.get("action")
+    hardware_items = data.get("inventory", [])
 
-    projectid = data.get("projectid")
-    inventory = data.get("inventory") 
-    action = data.get("action")       
+    if not all([project_id, action, hardware_items]):
+        return jsonify({"message": "projectid, action, and inventory are required"}), 400
 
-    if not projectid or not inventory or not action:
-        return jsonify({"message": "projectid, inventory, and action are required"}), 400
+    if action not in ["checkin", "checkout"]:
+        return jsonify({"message": "Invalid action. Must be 'checkin' or 'checkout'."}), 400
 
-    # Access respective DB
-    inventory_db = get_db("Inventory")
     project_db = get_db("Projects")
+    inventory_db = get_db("Inventory")
 
-    # Access respective Collections
-    inventory_collection = inventory_db["Inventory"]
-    project_collection = project_db["Projects"]
-
-    project = get_project_by_id(projectid)
+    project = project_db["Projects"].find_one({"projectid": project_id})
     if not project:
         return jsonify({"message": "Project not found"}), 404
 
-    phardware = project.get("phardware", [0] * len(inventory))
+    #phardware = project.get("phardware", ["0"] * len(HARDWARE_INDEX_MAP))
+    phardware = list(map(int, project.get("phardware", [0] * len(HARDWARE_INDEX_MAP))))
+    if len(phardware) < len(HARDWARE_INDEX_MAP):
+        phardware += ["0"] * (len(HARDWARE_INDEX_MAP) - len(phardware))
 
-    for index, hwObj in enumerate(inventory):
+    for item in hardware_items:
+        hardware_id = item.get("hardwareid")
+        quantity = item.get("quantity")
 
-        hwid = hwObj["hardwareid"]
-        qty = int(hwObj["quantity"])
+        if not hardware_id or quantity is None:
+            return jsonify({"message": "Each hardware item must include hardwareid and quantity"}), 400
+
+        if hardware_id not in HARDWARE_INDEX_MAP:
+            return jsonify({"message": f"Unsupported hardwareid: {hardware_id}"}), 400
+
+        try:
+            quantity = int(quantity)
+        except (ValueError, TypeError):
+            return jsonify({"message": f"Quantity for {hardware_id} must be a number"}), 400
+
+        if quantity <= 0:
+            return jsonify({"message": f"Quantity for {hardware_id} must be greater than 0"}), 400
+
+        index = HARDWARE_INDEX_MAP[hardware_id]
+        current_checked_out = int(phardware[index])
+
+        hardware = inventory_db["Inventory"].find_one({"hardwareid": hardware_id})
+        if not hardware:
+            return jsonify({"message": f"Hardware {hardware_id} not found"}), 404
 
         if action == "checkout":
-            #Updating Inventory collection at DB in checkout scenario
-            inventory_collection.update_one(
-                {"hardwareid": hwid},
-                {"$inc": {"availability": -qty}}
-            )
-            phardware[index] += qty
-        elif action == "checkin":
-            #Updating Inventory collection at DB in checkin scenario
-            inventory_collection.update_one(
-                {"hardwareid": hwid},
-                {"$inc": {"availability": qty}}
-            )
-            phardware[index] -= qty
+            available = hardware["availability"]
+            if quantity > available:
+                return jsonify({
+                    "message": f"Only {available} units of {hardware_id} are available for checkout"
+                }), 400
 
-    # Updating Projects collection at DB
-    project_collection.update_one(
-        {"projectid": projectid},
+            inventory_db["Inventory"].update_one(
+                {"hardwareid": hardware_id},
+                {"$inc": {"availability": -quantity}}
+            )
+
+            phardware[index] = (current_checked_out + quantity)
+
+        elif action == "checkin":
+            if quantity > current_checked_out:
+                return jsonify({
+                    "message": f"Project has only {current_checked_out} units of {hardware_id} to check in"
+                }), 400
+
+            inventory_db["Inventory"].update_one(
+                {"hardwareid": hardware_id},
+                {"$inc": {"availability": quantity}}
+            )
+
+            phardware[index] = current_checked_out - quantity
+
+    project_db["Projects"].update_one(
+        {"projectid": project_id},
         {"$set": {"phardware": phardware}}
     )
 
-    return jsonify({"message": f"{action.capitalize()} successful"}), 200
+    return jsonify({
+    "message": "Checkin/checkout successful",
+    "response": {
+        "projectid": project_id,
+        "checkedOut": phardware
+    }
+}), 200
