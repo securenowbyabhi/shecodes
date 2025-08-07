@@ -17,3 +17,15 @@ export async function postToEndpoint(endpoint, payload) {
   const data = await response.json();
   return { ok: response.ok, data };
 }
+
+export async function getFromEndpoint(endpoint, queryParams = {}) {
+  try {
+    const query = new URLSearchParams(queryParams).toString();
+    const response = await fetch(`${BASE_URL}/${endpoint}?${query}`);
+
+    const data = await response.json();
+    return { ok: response.ok, data };
+  } catch (error) {
+    return { ok: false, data: { message: error.message } };
+  }
+}
