@@ -3,6 +3,8 @@ from ..models.user import find_user_by_username, create_user
 #import bcrypt 
 from ..db import get_db
 from ..models.projects import get_project_by_id, get_hardware_status,create_project
+from flask import jsonify, session
+from ..models.user import find_user_by_username, create_user, check_password
 
 
 # Author : av42956 
@@ -10,6 +12,24 @@ from ..models.projects import get_project_by_id, get_hardware_status,create_proj
 
 
 
+# def handle_register(request):
+#     data = request.get_json()
+#     username = data.get('username')
+#     password = data.get('password')
+
+#     if not username or not password:
+#         return jsonify({'message': 'Username and password required'}), 400
+
+
+#     if find_user_by_username(username):
+#         return jsonify({'message': 'Username already exists'}), 400
+
+#     #hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+#     create_user(username, password)
+#     #create_user(username, hashed_password)
+
+#     return jsonify({'message': 'User registered successfully'}), 201
 def handle_register(request):
     data = request.get_json()
     username = data.get('username')
@@ -18,29 +38,44 @@ def handle_register(request):
     if not username or not password:
         return jsonify({'message': 'Username and password required'}), 400
 
-
     if find_user_by_username(username):
         return jsonify({'message': 'Username already exists'}), 400
 
-    #hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-
+    # Hashing happens inside create_user now
     create_user(username, password)
-    #create_user(username, hashed_password)
 
     return jsonify({'message': 'User registered successfully'}), 201
+
+
+# def handle_login(request):
+#     data = request.get_json()
+#     username = data.get('username')
+#     password = data.get('password')
+
+#     user = find_user_by_username(username)
+#     if not user or user['password'] != password:
+#         return jsonify({"message": "Invalid credentials"}), 401
+
+#     session['username'] = username
+#     return jsonify({"message": f"Welcome, {username}!"}), 200
 
 def handle_login(request):
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
 
+    if not username or not password:
+        return jsonify({"message": "Username and password required"}), 400
+
     user = find_user_by_username(username)
-    if not user or user['password'] != password:
+    if not user:
         return jsonify({"message": "Invalid credentials"}), 401
 
-    session['username'] = username
-    return jsonify({"message": f"Welcome, {username}!"}), 200
+    if not check_password(password, user["password"]):
+        return jsonify({"message": "Invalid credentials"}), 401
 
+    session['username'] = username  # Optional: for login session management
+    return jsonify({"message": f"Welcome, {username}!"}), 200
 
 def handle_project_status(request):
     project_id = request.args.get("projectid")
