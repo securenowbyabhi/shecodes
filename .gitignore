@@ -4,4 +4,5 @@ backend/app/__pycache__/__init__.cpython-310.pyc
 backend/app/__pycache__/db.cpython-310.pyc
 backend/app/controllers/__pycache__/auth_controller.cpython-310.pyc
 backend/app/models/__pycache__/user.cpython-310.pyc
-backend/app/routes/__pycache__/auth_routes.cpython-310.pyc
+backend/app/routes/__pycache__/auth_routes.cpython-310.pyc*.pyc
+__pycache__/
