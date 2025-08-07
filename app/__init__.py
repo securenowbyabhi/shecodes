@@ -14,8 +14,7 @@ def create_app():
     app = Flask(__name__)
 
     # Proper CORS setup
-    CORS(app, resources={r"/*": {"origins": "https://shecodes-frontend-42cfc16f09b9.herokuapp.com"}})
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
     # Optional: Additional fallback to ensure headers are applied
     @app.after_request
