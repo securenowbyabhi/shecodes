@@ -17,6 +17,15 @@ def create_app():
     CORS(app, resources={r"/*": {"origins": "https://shecodes-frontend-42cfc16f09b9.herokuapp.com"}})
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
+    # Optional: Additional fallback to ensure headers are applied
+    @app.after_request
+    def add_cors_headers(response):
+        response.headers['Access-Control-Allow-Origin'] = 'https://shecodes-frontend-42cfc16f09b9.herokuapp.com'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,OPTIONS'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        return response
+
     init_db(app)
     app.register_blueprint(auth_bp)
 
