@@ -12,7 +12,11 @@ def get_hardware_status():
     hw2 = db["Inventory"].find_one({"hardwareid": "hw2"})
     return [hw1, hw2]
 
-def create_project(projectid,projectname,projectdescription):
+def create_project(projectid, projectname, projectdescription):
     db = get_db("Projects")
-    return db["Projects"].insert_one({"projectid": projectid, "projectname": projectname,
-                                     "projectdescription":projectdescription})
+    return db["Projects"].insert_one({
+        "projectid": projectid,
+        "projectname": projectname,
+        "description": projectdescription,
+        "phardware": [0, 0]
+    })
