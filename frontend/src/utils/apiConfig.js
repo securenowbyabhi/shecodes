@@ -6,4 +6,4 @@
  * @version     v1.0.0
  **********************************************************************************************************/
 
-export const BASE_URL = 'http://localhost:8000/shecodes';
+export const BASE_URL = 'https://shecodes-backend-128e6939f795.herokuapp.com';
