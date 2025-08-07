@@ -16,7 +16,7 @@ def create_app():
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
     # Proper CORS setup
-    #CORS(app, resources={r"/*": {"origins": "*"}})
+    CORS(app, resources={r"/*": {"origins": "https://shecodes-frontend-42cfc16f09b9.herokuapp.com"}})
     
     init_db(app)
     app.register_blueprint(auth_bp)
