@@ -12,12 +12,11 @@ def create_app():
     load_dotenv()  # Load environment variables
 
     app = Flask(__name__)
-    CORS(app)
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
     # Proper CORS setup
     CORS(app, resources={r"/*": {"origins": "https://shecodes-frontend-42cfc16f09b9.herokuapp.com"}})
-    
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
     init_db(app)
     app.register_blueprint(auth_bp)
 
