@@ -10,7 +10,7 @@
  **********************************************************************************************************/
 import React, { useEffect,useState } from "react";
 import ReusableHeaderComponent from "./ReusableHeaderComponent";
-import { useOutletContext  } from 'react-router-dom';
+import { useOutletContext,Link } from 'react-router-dom';
 import { postToEndpoint, getFromEndpoint } from "../utils/apiHelpers";
 import { showSuccess, showError } from "../utils/toastUtils";
 import "../utils/spinner.css";
@@ -23,7 +23,7 @@ const ResourceComponent = () => {
   useEffect(() => {
     setIsLoggedIn(true);
   }, [setIsLoggedIn]);
-
+  
   const [spinnerLoading, setSpinnerLoading] = useState(false);
 
   //checkOut attribute in projectForm will hold checkedOut quantities per hardware [0,0]
@@ -240,6 +240,9 @@ const ResourceComponent = () => {
               Check Project
             </button>
           </div>
+            <p style={{ marginTop: "20px" }}>
+              Create new project? <Link to="/project">click here</Link>
+            </p>
         </form>
 
         {/* Loading second part of the UI, once project Id is validated and details are successfully retrieved */}
