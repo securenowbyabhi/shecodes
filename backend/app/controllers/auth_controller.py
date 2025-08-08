@@ -177,11 +177,22 @@ def handle_checkin_checkout(request):
         {"projectid": project_id},
         {"$set": {"phardware": phardware}}
     )
+    inventory = get_hardware_status()
+
+    response = {
+        "projectid": project_id,
+        "checkedOut": phardware,
+        "inventory": [
+            {
+                "hardwareid": hw["hardwareid"],
+                "capacity": hw["capacity"],
+                "available": hw["availability"]
+            } for hw in inventory if hw
+        ]
+    }
 
     return jsonify({
         "message": f"{action.capitalize()} successful",
-        "response": {
-            "projectid": project_id,
-            "checkedOut": phardware
-        }
+        "response": response
     }), 200
+
