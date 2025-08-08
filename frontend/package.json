@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://shecodes-backend-128e6939f795.herokuapp.com/",
+  "proxy": "https://shecodes-backend-128e6939f795.herokuapp.com/shecodes",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
