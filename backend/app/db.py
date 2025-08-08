@@ -9,7 +9,7 @@ from pymongo import MongoClient
 load_dotenv()
 
 mongo = PyMongo()
-mongo_client = MongoClient(os.getenv("MONGO_URI"), tlsCAFile=certifi.where())
+mongo_client = MongoClient(os.getenv("MONGO_URI"))
 
 
 def init_db(app: Flask):
