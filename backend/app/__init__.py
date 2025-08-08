@@ -13,6 +13,11 @@ def create_app():
 
     app = Flask(__name__)
 
+    # Add this route:
+    @app.route('/')
+    def index():
+        return "Backend API is running!"
+
     # Proper CORS setup
     CORS(app, resources={r"/*": {"origins": "*"}})
 
