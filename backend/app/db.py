@@ -9,18 +9,12 @@ from pymongo import MongoClient
 load_dotenv()
 
 mongo = PyMongo()
-mongo_client = None  # Initialize as None here
+mongo_client = MongoClient(os.getenv("MONGO_URI"), tlsCAFile=certifi.where())
+
 
 def init_db(app: Flask):
     app.config["MONGO_URI"] = os.getenv("MONGO_URI")
     mongo.init_app(app)
 
-def get_mongo_client():
-    global mongo_client
-    if mongo_client is None:
-        mongo_client = MongoClient(os.getenv("MONGO_URI"), tlsCAFile=certifi.where())
-    return mongo_client
-
 def get_db(db_name: str):
-    client = get_mongo_client()
-    return client[db_name]
+    return mongo_client[db_name]
