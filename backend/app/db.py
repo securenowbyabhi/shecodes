@@ -1,18 +1,20 @@
 # db.py
 import certifi
-from pymongo import MongoClient
-import os
+from flask import Flask
+from flask_pymongo import PyMongo
 from dotenv import load_dotenv
+import os
+from pymongo import MongoClient
 
 load_dotenv()
 
-MONGO_URI = os.getenv("MONGO_URI")
+mongo = PyMongo()
+mongo_client = MongoClient(os.getenv("MONGO_URI"), tlsCAFile=certifi.where())
 
-# Initialize MongoClient with SSL cert verification
-mongo_client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
+
+def init_db(app: Flask):
+    app.config["MONGO_URI"] = os.getenv("MONGO_URI")
+    mongo.init_app(app)
 
 def get_db(db_name: str):
-    """
-    Returns the database object for the given database name.
-    """
     return mongo_client[db_name]
