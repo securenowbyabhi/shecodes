@@ -19,9 +19,9 @@ def create_app():
         return "Backend API is running!"
 
     # Proper CORS setup
-    CORS(app, resources={r"/*": {"origins": "https://shecodes-frontend-42cfc16f09b9.herokuapp.com"}})
+    CORS(app, resources={r"/*": {"origins": "https://shecodes-frontend-42cfc16f09b9.herokuapp.com"}}, supports_credentials=True)
 
     init_db(app)
-    app.register_blueprint(auth_bp)
+    app.register_blueprint(auth_bp, url_prefix='/shecodes')
 
     return app
