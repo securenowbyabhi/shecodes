@@ -6,4 +6,5 @@
  * @version     v1.0.0
  **********************************************************************************************************/
 
-export const BASE_URL = 'http://localhost:8000/shecodes';
+// Use same-origin when deployed (Flask + React on one Heroku app)
+export const BASE_URL = '/shecodes';
