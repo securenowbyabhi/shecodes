@@ -57,33 +57,14 @@ const ResourceComponent = () => {
       });
       console.log("Project Data from backend :", data);
 
-      //This will hold the actual response from the server having message and data(JSON format)
-      const response = data.response;
-
       if (ok) {
-
-        //populating projectForm with project Id and hardware qty already checked out
-        setProjectForm((prev) => ({
-          ...prev,
-          checkedOut: response.checkedOut || [],
-        }));
-
-        //populating hardwareForm with inventory details received from backend
-        const inventory = response.inventory.map((hwObj) => ({
-          hardwareid: hwObj.hardwareid,
-          capacity: hwObj.capacity,
-          available: hwObj.available,
-          userinput: 0,
-        }));
-        setHardwareForm(inventory);
-
+        handleProjectForm(data.response);
+        handleHardwareForm(data.response);
         setProjectDataLoaded(true); //setting flag to load the section having project along with inventory details on UI
         showSuccess(`Success: ${data.message}`);
-
       } else {
         showError(`Error: ${data.message}`);
       }
-
     } catch (error) {
       showError(`Error: ${error.message}`);
     } finally {
@@ -92,11 +73,37 @@ const ResourceComponent = () => {
   };
 
   /*********************************************************************************************
+  * Method: 'handleProjectForm'
+  * Purpose: Method to keep projectForm attributes updated on UI
+  **********************************************************************************************/
+  function handleProjectForm(response) {
+    //populating projectForm with project Id and hardware qty already checked out
+    setProjectForm((prev) => ({
+      ...prev,
+      checkedOut: response.checkedOut || [],
+    }));
+  };
+
+  /*********************************************************************************************
+  * Method: 'handleHardwareForm'
+  * Purpose: Method to keep hardwareForm attributes updated on UI
+  **********************************************************************************************/
+  function handleHardwareForm(response) {
+    //populating hardwareForm with inventory details received from backend
+    const inventory = response.inventory.map((hwObj) => ({
+      hardwareid: hwObj.hardwareid,
+      capacity: hwObj.capacity,
+      available: hwObj.available,
+      userinput: 0,
+    }));
+    setHardwareForm(inventory);
+  };
+  
+  /*********************************************************************************************
   * Method: 'handleUserInputChange'
   * Purpose: Method to keep track of the hardware Request by the user specific to harware type
   **********************************************************************************************/
   const handleUserInputChange = (index, value) => {
-
     setHardwareForm((prev) => {
       const inventoryData = [...prev];
       inventoryData[index] = { ...inventoryData[index], userinput: value }; 
@@ -112,38 +119,31 @@ const ResourceComponent = () => {
   const handleCheckInCheckOut = async (action) => {
 
     setSpinnerLoading(true);
-
     let anyQtyToCheckInCheckOut = 0
     
     //Handle all the edge case scenario - validating the requested number before proceeding
     for (let i = 0; i < hardwareForm.length; i++) {
-
       const inputQty = hardwareForm[i].userinput;
 	    const available = hardwareForm[i].available;
 	    const checkedOut = projectForm.checkedOut[i];
-
       if(inputQty < 0) {
         showError(`Error: Negative quantity ${inputQty} for ${hardwareForm[i].hardwareid}.`);
         setSpinnerLoading(false);
         return;
       } 
-	  
 	    if(action === 'checkout' && inputQty > available) {
         showError(`Error: Cannot check out ${inputQty} quantity, only ${available} available for ${hardwareForm[i].hardwareid}.`);
         setSpinnerLoading(false);
         return;
       } 
-	  
 	    if(action === 'checkin' && inputQty > checkedOut) {
 	      showError(`Error: Cannot check in ${inputQty} quantity, when checked out is ${checkedOut} for ${hardwareForm[i].hardwareid}.`);
 		    setSpinnerLoading(false);
         return;
 	    }
-          
       if(inputQty > 0 && anyQtyToCheckInCheckOut === 0) {
         anyQtyToCheckInCheckOut = inputQty
       } 
-
     }
 
     //Throwing error if user is simply clicking check-out/check-in without requesting any number
@@ -169,29 +169,13 @@ const ResourceComponent = () => {
       });
 
       if (ok) {
-
         showSuccess(`Success: ${data.message}`);
-
-        //Updating 'projectForm' datastructure to refelect the updated count on UI
-        setProjectForm((prev) => {
-          const updatedCheckedOut = prev.checkedOut.map((qty, i) => {
-			    const userInputQty = hardwareForm[i].userinput;
-            return action === "checkout"? qty + userInputQty : qty - userInputQty;
-          });
-          return {...prev,checkedOut: updatedCheckedOut};
-        });
-
-        //Updating 'hardwareForm' datastructure to reflect the updated count of inventory on UI
-        const updatedForm = hardwareForm.map((hwObj) => ({
-          ...hwObj,
-          available: action === "checkout" ? hwObj.available - hwObj.userinput : hwObj.available + hwObj.userinput,
-          userinput: 0,
-        }));
-        setHardwareForm(updatedForm);
-
+        handleProjectForm(data.response);
+        handleHardwareForm(data.response);
       } else {
         showError(`Error: ${data.message || "Unknown error"}.`);
       }
+
     } catch (error) {
       showError(`Error: ${error.message}.`);
     } finally {

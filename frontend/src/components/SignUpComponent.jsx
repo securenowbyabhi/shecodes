@@ -8,6 +8,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import ReusableHeaderComponent from "./ReusableHeaderComponent";
+import UserCredentialForm from "./UserCredentialForm";
 import CancelButton from './CancelButton';
 import { postToEndpoint } from "../utils/apiHelpers";
 import { showSuccess, showError } from "../utils/toastUtils";
@@ -52,39 +53,12 @@ function SignUpComponent() {
       <ReusableHeaderComponent title="Welcome to User Sign-Up page" message="" />
 
       <form onSubmit={handleSubmit}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <label style={{ width: "100px" }}>User ID</label>
-          <input
-            type="text"
-            name="userid"
-            value={formData.userid}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <label style={{ width: "100px" }}>Password</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        
+        {/*Reusable user form*/}
+        <UserCredentialForm
+          formData={formData}
+          handleChange={handleChange}
+        />
 
         <button type="submit">
           Add User

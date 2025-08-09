@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 // useOutletContext is required so that nested routes(login/register/project/resouce etc page) read data passed from the parent
 import { useNavigate, useOutletContext  } from 'react-router-dom';
 import ReusableHeaderComponent from './ReusableHeaderComponent';
+import UserCredentialForm from './UserCredentialForm';
 import CancelButton from './CancelButton';
 import { postToEndpoint } from '../utils/apiHelpers';
 import { showSuccess, showError } from '../utils/toastUtils';
@@ -64,35 +65,19 @@ function LoginComponent() {
 
       <form onSubmit={handleSubmit}>
 
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-          <label style={{ width: '100px' }}>User ID</label>
-          <input
-            type="text"
-            name="userid"
-            value={formData.userid}
-            onChange={handleChange}
-            required
-          />
-        </div>
+      {/*Reusable user form*/}
+      <UserCredentialForm
+        formData={formData}
+        handleChange={handleChange}
+      />
 
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-          <label style={{ width: '100px' }}>Password</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
+      <button type="submit" >Login</button>
 
-        <button type="submit" >Login</button>
-
-        {/*Calling reusable CancelButton component*/}
-        <CancelButton 
-          resetForm={resetForm} 
-          redirectTo="/about" 
-        />
+      {/*Calling reusable CancelButton component*/}
+      <CancelButton 
+        resetForm={resetForm} 
+        redirectTo="/about" 
+      />
 
       </form>
 
