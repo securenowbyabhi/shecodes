@@ -1,6 +1,5 @@
 from flask import jsonify, session
-from ..models.user import find_user_by_username, create_user
-#import bcrypt 
+from ..models.user import find_user_by_username, create_user, check_password
 from ..db import get_db
 from ..models.projects import get_project_by_id, get_hardware_status,create_project
 
@@ -22,10 +21,7 @@ def handle_register(request):
     if find_user_by_username(username):
         return jsonify({'message': 'Username already exists'}), 400
 
-    #hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-
     create_user(username, password)
-    #create_user(username, hashed_password)
 
     return jsonify({'message': 'User registered successfully'}), 201
 
@@ -35,7 +31,9 @@ def handle_login(request):
     password = data.get('password')
 
     user = find_user_by_username(username)
-    if not user or user['password'] != password:
+
+    #adding for encryption
+    if not user or not check_password(password, user["password"]):
         return jsonify({"message": "Invalid credentials"}), 401
 
     session['username'] = username
