@@ -7,7 +7,7 @@
  **********************************************************************************************************/
 import { BASE_URL } from './apiConfig';
 
-export async function postToEndpoint(endpoint, payload) {
+/*export async function postToEndpoint(endpoint, payload) {
   const response = await fetch(`${BASE_URL}/${endpoint}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -16,7 +16,20 @@ export async function postToEndpoint(endpoint, payload) {
 
   const data = await response.json();
   return { ok: response.ok, data };
+}*/
+
+export async function postToEndpoint(endpoint, payload) {
+  const response = await fetch(`${BASE_URL}/${endpoint}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    credentials: 'include' 
+  });
+
+  const data = await response.json();
+  return { ok: response.ok, data };
 }
+
 
 export async function getFromEndpoint(endpoint, queryParams = {}) {
   try {
