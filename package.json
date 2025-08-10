@@ -1,0 +1,7 @@
+{
+  "name": "shecodes-heroku",
+  "private": true,
+  "scripts": {
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm --prefix frontend install && npm --prefix frontend run build"
+  }
+}
