@@ -1,31 +1,17 @@
 STEPS FOR FOLDER STRUCTURE :
 
-aditiverma@Mac ~ % cd Documents
-
 aditiverma@Mac Documents % mkdir checkIncheckout 
-
 aditiverma@Mac Documents % cd checkIncheckout 
-
 aditiverma@Mac checkIncheckout % mkdir backend
-
 aditiverma@Mac checkIncheckout % cd backend 
-
 aditiverma@Mac backend % mkdir app app/models app/routes app/controllers
-
 aditiverma@Mac backend % touch app.py
-
 aditiverma@Mac backend % touch .env
-
 aditiverma@Mac backend % touch requirements.txt
-
 aditiverma@Mac backend % cd app
-
 aditiverma@Mac app % touch __init__.py db.py
-
 aditiverma@Mac app % touch models/user.py
-
 aditiverma@Mac app % touch routes/auth_routes.py
-
 aditiverma@Mac app % touch controllers/auth_controller.py
 
 ----------------------------------------------------------------------
